@@ -1,0 +1,30 @@
+{
+  "name": "bare-readline",
+  "version": "0.0.0",
+  "description": "Line editing for interactive CLIs with command history",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "test": "standard && bare test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holepunchto/bare-readline.git"
+  },
+  "author": "Holepunch",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/holepunchto/bare-readline/issues"
+  },
+  "homepage": "https://github.com/holepunchto/bare-readline#readme",
+  "dependencies": {
+    "bare-ansi-escapes": "^1.1.0",
+    "streamx": "^2.15.1"
+  },
+  "devDependencies": {
+    "brittle": "^3.2.1",
+    "standard": "^17.0.0"
+  }
+}
