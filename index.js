@@ -1,5 +1,6 @@
 const { Readable } = require('streamx')
 const ansiEscapes = require('bare-ansi-escapes')
+const KeyDecoder = require('bare-ansi-escapes/key-decoder')
 
 const constants = {
   EOL: '\r\n'
@@ -10,7 +11,7 @@ module.exports = exports = class Readline extends Readable {
     super()
 
     this._prompt = opts.prompt || '> '
-    this._decoder = new ansiEscapes.KeyDecoder()
+    this._decoder = new KeyDecoder()
     this._history = new History()
 
     this.input = opts.input
