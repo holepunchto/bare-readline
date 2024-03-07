@@ -59,7 +59,7 @@ module.exports = exports = class Readline extends Readable {
   }
 
   _destroy (cb) {
-    this._decoder.destroy()
+    this._decoder.end()
     cb(null)
   }
 
