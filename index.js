@@ -58,11 +58,6 @@ module.exports = exports = class Readline extends Readable {
     this.cursor = 0
   }
 
-  _destroy (cb) {
-    this._decoder.end()
-    cb(null)
-  }
-
   _ondata (line) {
     this.emit('line', line) // For Node.js compatibility
   }
