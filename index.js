@@ -1,4 +1,4 @@
-const { Readable } = require('streamx')
+const { Readable } = require('bare-stream')
 const ansiEscapes = require('bare-ansi-escapes')
 const KeyDecoder = require('bare-ansi-escapes/key-decoder')
 

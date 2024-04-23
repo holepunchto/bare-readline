@@ -1,5 +1,5 @@
 const test = require('brittle')
-const { PassThrough } = require('streamx')
+const { PassThrough } = require('bare-stream')
 const Readline = require('.')
 
 test('basic', (t) => {
