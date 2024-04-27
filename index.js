@@ -1,6 +1,7 @@
 const { Readable } = require('bare-stream')
 const ansiEscapes = require('bare-ansi-escapes')
 const KeyDecoder = require('bare-ansi-escapes/key-decoder')
+const process = require('process');
 
 const constants = {
   EOL: '\r\n'
@@ -18,6 +19,9 @@ module.exports = exports = class Readline extends Readable {
     this.output = opts.output
     this.line = ''
     this.cursor = 0
+    this.inChoiceMode = false; // Add this to track if we are in choice mode
+    this.choiceIndex = 0; // Index of the currently selected option
+    this.options = []; // Available options for choice
 
     this.input
       .pipe(this._decoder)
@@ -57,12 +61,47 @@ module.exports = exports = class Readline extends Readable {
     this.line = ''
     this.cursor = 0
   }
-
+  
   _ondata (line) {
     this.emit('line', line) // For Node.js compatibility
   }
 
   _onkey (key) {
+    if (this.inChoiceMode) {
+      switch (key.name) {
+        case 'up':
+          this.choiceIndex = (this.choiceIndex - 1 + this.options.length) % this.options.length;
+           // Move cursor up to the start of options and erase everything below
+          this.write(ansiEscapes.cursorUp(this.options.length) + ansiEscapes.eraseDisplayEnd);
+          this.showOptions();
+          return;
+        case 'down':
+          this.choiceIndex = (this.choiceIndex + 1 + this.options.length) % this.options.length;
+           // Move cursor up to the start of options and erase everything below
+          this.write(ansiEscapes.cursorUp(this.options.length) + ansiEscapes.eraseDisplayEnd);
+          this.showOptions();
+          return;
+        case 'return':
+          const selectedOption = this.options[this.choiceIndex];
+          this.inChoiceMode = false;
+          this.write(ansiEscapes.colorBrightGreen + 'Selected option: ' + selectedOption + '\r\n' + ansiEscapes.modifierReset);
+          this.clearLine();
+          this.emit('optionSelected', selectedOption); // For Node.js compatibility
+          this.prompt();
+          // show the cursor
+          this.write(ansiEscapes.showCursor());
+          return;
+        // Handle exit from choice mode without making a selection
+        case 'escape':
+          this.inChoiceMode = false;
+          this.write(ansiEscapes.colorBrightRed + 'No option selected' + '\r\n' + ansiEscapes.modifierReset);
+          this.clearLine();
+          this.prompt();
+          // show the cursor
+          this.write(ansiEscapes.showCursor());
+          return;
+      }
+    }
     if (key.name === 'up') return this._onup()
     if (key.name === 'down') return this._ondown()
 
@@ -72,12 +111,20 @@ module.exports = exports = class Readline extends Readable {
 
     switch (key.name) {
       case 'd':
-        if (key.ctrl) return this.close()
+        if (key.ctrl) {
+          // tty.constants.MODE_RAW does not recognize ctrl+c
+          this.close()
+          return process.exit()
+        }
         characters = key.shift ? 'D' : 'd'
         break
 
       case 'c':
-        if (key.ctrl) return this.close()
+        if (key.ctrl) {
+          // tty.constants.MODE_RAW does not recognize ctrl+c
+          this.close()
+          return process.exit()
+        }
         characters = key.shift ? 'C' : 'c'
         break
 
@@ -171,6 +218,31 @@ module.exports = exports = class Readline extends Readable {
     if (this.cursor) {
       this.cursor--
       this.write(ansiEscapes.cursorBack())
+    }
+  }
+
+  showOptions(options) {
+    // inital showing of options
+    if(options){
+      this.options = options; // Set the options
+      this.choiceIndex = 0; // Start at the first option
+      this.inChoiceMode = true; // Enter choice mode
+      this.clearLine();
+      const optionsText = this.options.map((option, index) => {
+        return (index === this.choiceIndex ? '[*] ' : '[ ] ') + option;
+      }).join('\r\n');
+      this.write(optionsText + constants.EOL);
+      // hide the cursor
+      this.write(ansiEscapes.hideCursor());
+    }
+    else{
+      // Build the options text with the current selection marked
+      const optionsText = this.options.map((option, index) => {
+        return (index === this.choiceIndex ? '[*] ' : '[ ] ') + option;
+      }).join('\r\n');
+
+      // Display the options with the prompt
+      this.write(optionsText + constants.EOL);
     }
   }
 }
