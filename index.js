@@ -6,7 +6,7 @@ const constants = {
   EOL: '\r\n'
 }
 
-module.exports = exports = class Readline extends Readable {
+const Readline = module.exports = exports = class Readline extends Readable {
   constructor (opts = {}) {
     super()
 
@@ -24,10 +24,6 @@ module.exports = exports = class Readline extends Readable {
     this.cursor = 0
 
     this.on('data', this._online).resume()
-  }
-
-  static createInterface (opts) {
-    return new Readline(opts)
   }
 
   prompt () {
@@ -176,6 +172,10 @@ module.exports = exports = class Readline extends Readable {
       this.write(ansiEscapes.cursorBack())
     }
   }
+}
+
+exports.createInterface = function createInterface (opts) {
+  return new Readline(opts)
 }
 
 exports.constants = constants
