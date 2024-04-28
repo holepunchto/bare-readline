@@ -1,6 +1,7 @@
 const { Readable } = require('bare-stream')
 const ansiEscapes = require('bare-ansi-escapes')
 const KeyDecoder = require('bare-ansi-escapes/key-decoder')
+const process = require('process')
 
 const constants = {
   EOL: '\r\n'
@@ -71,12 +72,18 @@ const Readline = module.exports = exports = class Readline extends Readable {
 
     switch (key.name) {
       case 'd':
-        if (key.ctrl) return this.close()
+        if (key.ctrl) {
+          this.close()
+          return process.exit()
+        }
         characters = key.shift ? 'D' : 'd'
         break
 
       case 'c':
-        if (key.ctrl) return this.close()
+        if (key.ctrl) {
+          this.close()
+          return process.exit()
+        }
         characters = key.shift ? 'C' : 'c'
         break
 
