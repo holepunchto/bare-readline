@@ -11,21 +11,19 @@ module.exports = exports = class Readline extends Readable {
     super()
 
     this._prompt = opts.prompt || '> '
-    this._decoder = new KeyDecoder()
+
+    this._oninput = this._oninput.bind(this)
+    this._onkey = this._onkey.bind(this)
+
+    this._decoder = new KeyDecoder().on('data', this._onkey)
     this._history = new History()
 
-    this.input = opts.input
+    this.input = opts.input.on('data', this._oninput)
     this.output = opts.output
     this.line = ''
     this.cursor = 0
 
-    this.input
-      .pipe(this._decoder)
-      .on('data', this._onkey.bind(this))
-
-    this
-      .on('data', this._ondata)
-      .resume()
+    this.on('data', this._online).resume()
   }
 
   static createInterface (opts) {
@@ -45,6 +43,7 @@ module.exports = exports = class Readline extends Readable {
   }
 
   close () {
+    this.input.off('data', this._oninput)
     this.push(null)
   }
 
@@ -58,7 +57,11 @@ module.exports = exports = class Readline extends Readable {
     this.cursor = 0
   }
 
-  _ondata (line) {
+  _oninput (data) {
+    this._decoder.write(data)
+  }
+
+  _online (line) {
     this.emit('line', line) // For Node.js compatibility
   }
 
