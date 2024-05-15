@@ -40,7 +40,7 @@ test('supports linefeed as line event', (t) => {
   input.write('\n')
 })
 
-test.skip('supports \\r\\n as single line event', (t) => {
+test('supports \\r\\n as single line event', (t) => {
   t.plan(2)
 
   const input = new PassThrough()
