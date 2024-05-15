@@ -82,6 +82,7 @@ const Readline = module.exports = exports = class Readline extends Readable {
 
       case 'backspace': return this._onbackspace()
 
+      case 'linefeed':
       case 'return': {
         const line = this.line
         if (line.trim() === '') return ''
@@ -95,7 +96,6 @@ const Readline = module.exports = exports = class Readline extends Readable {
       case 'right': return this._onright()
       case 'left': return this._onleft()
 
-      case 'linefeed':
       case 'escape':
       case 'f1': case 'f2': case 'f3': case 'f4': case 'f5': case 'f6':
       case 'f7': case 'f8': case 'f9': case 'f10': case 'f11': case 'f12':
