@@ -23,7 +23,7 @@ const Readline = module.exports = exports = class Readline extends Readable {
     this.line = ''
     this.cursor = 0
 
-    this.on('data', this._online).resume()
+    this.on('data', this._online).setEncoding('utf8')
   }
 
   prompt () {
