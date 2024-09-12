@@ -85,10 +85,10 @@ const Readline = module.exports = exports = class Readline extends Readable {
       case 'linefeed':
       case 'return': {
         const line = this.line
-        if (line.trim() === '') return
-        if (line !== this._history.get(0)) this._history.unshift(line)
+        const remember = line.trim() !== ''
+        if (remember && line !== this._history.get(0)) this._history.unshift(line)
         this.push(line)
-        this.emit('history', this._history.entries)
+        if (remember) this.emit('history', this._history.entries)
         this.clearLine()
         return
       }

@@ -58,3 +58,21 @@ test('supports \\r\\n as single line event', (t) => {
   input.write('hello world')
   input.write('\r\n')
 })
+
+test('emit empty line on return', (t) => {
+  t.plan(2)
+
+  const input = new PassThrough()
+  const rl = new Readline({ input })
+
+  rl
+    .on('data', (line) => {
+      t.is(line, '')
+      rl.close()
+    })
+    .on('close', () => {
+      t.pass('closed')
+    })
+
+  input.write('\r')
+})
