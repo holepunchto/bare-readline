@@ -51,9 +51,11 @@ const Readline = module.exports = exports = class Readline extends Readable {
   }
 
   clearLine () {
+    const line = this.line
     this.write(constants.EOL)
     this.line = ''
     this.cursor = 0
+    return line
   }
 
   _oninput (data) {
@@ -73,7 +75,7 @@ const Readline = module.exports = exports = class Readline extends Readable {
       this._sawReturn = Date.now()
     }
 
-    const line = this.line
+    const line = this.clearLine()
 
     const remember = line.trim() !== ''
     if (remember && line !== this._history.get(0)) this._history.unshift(line)
@@ -81,8 +83,6 @@ const Readline = module.exports = exports = class Readline extends Readable {
     this.push(line)
 
     if (remember) this.emit('history', this._history.entries)
-
-    this.clearLine()
   }
 
   _onkey (key) {
