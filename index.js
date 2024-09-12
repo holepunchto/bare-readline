@@ -11,6 +11,7 @@ const Readline = module.exports = exports = class Readline extends Readable {
     super()
 
     this._prompt = opts.prompt || '> '
+    this._crlfDelay = opts.crlfDelay ? Math.max(100, opts.crlfDelay) : 100
 
     this._oninput = this._oninput.bind(this)
     this._onkey = this._onkey.bind(this)
@@ -18,12 +19,14 @@ const Readline = module.exports = exports = class Readline extends Readable {
     this._decoder = new KeyDecoder().on('data', this._onkey)
     this._history = new History()
 
+    this._sawReturn = 0
+
     this.input = opts.input.on('data', this._oninput)
     this.output = opts.output
     this.line = ''
     this.cursor = 0
 
-    this.on('data', this._online).setEncoding('utf8')
+    this.on('data', this._ondata).setEncoding('utf8')
   }
 
   prompt () {
@@ -57,8 +60,29 @@ const Readline = module.exports = exports = class Readline extends Readable {
     this._decoder.write(data)
   }
 
-  _online (line) {
+  _ondata (line) {
     this.emit('line', line) // For Node.js compatibility
+  }
+
+  _online (linefeed) {
+    if (linefeed) {
+      if (this._sawReturn > 0 && Date.now() - this._sawReturn <= this._crlfDelay) return
+
+      this._sawReturn = 0
+    } else {
+      this._sawReturn = Date.now()
+    }
+
+    const line = this.line
+
+    const remember = line.trim() !== ''
+    if (remember && line !== this._history.get(0)) this._history.unshift(line)
+
+    this.push(line)
+
+    if (remember) this.emit('history', this._history.entries)
+
+    this.clearLine()
   }
 
   _onkey (key) {
@@ -82,16 +106,8 @@ const Readline = module.exports = exports = class Readline extends Readable {
 
       case 'backspace': return this._onbackspace()
 
-      case 'linefeed':
-      case 'return': {
-        const line = this.line
-        const remember = line.trim() !== ''
-        if (remember && line !== this._history.get(0)) this._history.unshift(line)
-        this.push(line)
-        if (remember) this.emit('history', this._history.entries)
-        this.clearLine()
-        return
-      }
+      case 'return': return this._online(false /* linefeed */)
+      case 'linefeed': return this._online(true /* linefeed */)
 
       case 'right': return this._onright()
       case 'left': return this._onleft()
