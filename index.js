@@ -86,8 +86,8 @@ const Readline = module.exports = exports = class Readline extends Readable {
   }
 
   _onkey (key) {
-    if (key.name === 'up') return this._onup()
-    if (key.name === 'down') return this._ondown()
+    if (key.name === 'up' || (key.ctrl && key.name === 'p')) return this._onup()
+    if (key.name === 'down' || (key.ctrl && key.name === 'n')) return this._ondown()
 
     this._history.cursor = -1
 
