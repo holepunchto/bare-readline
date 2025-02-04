@@ -8,14 +8,29 @@ test('basic', (t) => {
   const input = new PassThrough()
   const rl = new Readline({ input })
 
-  rl
-    .on('data', (line) => {
-      t.is(line, 'hello world')
-      rl.close()
-    })
-    .on('close', () => {
-      t.pass('closed')
-    })
+  rl.on('data', (line) => {
+    t.is(line, 'hello world')
+    rl.close()
+  }).on('close', () => {
+    t.pass('closed')
+  })
+
+  input.write('hello world')
+  input.write('\r')
+})
+
+test('createInterface', (t) => {
+  t.plan(2)
+
+  const input = new PassThrough()
+  const rl = Readline.createInterface({ input })
+
+  rl.on('data', (line) => {
+    t.is(line, 'hello world')
+    rl.close()
+  }).on('close', () => {
+    t.pass('closed')
+  })
 
   input.write('hello world')
   input.write('\r')
@@ -27,14 +42,12 @@ test('supports linefeed as line event', (t) => {
   const input = new PassThrough()
   const rl = new Readline({ input })
 
-  rl
-    .on('line', (line) => {
-      t.is(line, 'hello world')
-      rl.close()
-    })
-    .on('close', () => {
-      t.pass('closed')
-    })
+  rl.on('line', (line) => {
+    t.is(line, 'hello world')
+    rl.close()
+  }).on('close', () => {
+    t.pass('closed')
+  })
 
   input.write('hello world')
   input.write('\n')
@@ -46,14 +59,12 @@ test('supports \\r\\n as single line event', (t) => {
   const input = new PassThrough()
   const rl = new Readline({ input })
 
-  rl
-    .on('line', (line) => {
-      t.is(line, 'hello world')
-      rl.close()
-    })
-    .on('close', () => {
-      t.pass('closed')
-    })
+  rl.on('line', (line) => {
+    t.is(line, 'hello world')
+    rl.close()
+  }).on('close', () => {
+    t.pass('closed')
+  })
 
   input.write('hello world')
   input.write('\r\n')
@@ -65,14 +76,12 @@ test('emit empty line on return', (t) => {
   const input = new PassThrough()
   const rl = new Readline({ input })
 
-  rl
-    .on('data', (line) => {
-      t.is(line, '')
-      rl.close()
-    })
-    .on('close', () => {
-      t.pass('closed')
-    })
+  rl.on('data', (line) => {
+    t.is(line, '')
+    rl.close()
+  }).on('close', () => {
+    t.pass('closed')
+  })
 
   input.write('\r')
 })

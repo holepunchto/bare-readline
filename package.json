@@ -2,12 +2,19 @@
   "name": "bare-readline",
   "version": "1.0.7",
   "description": "Line editing for interactive CLIs with command history",
-  "main": "index.js",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./package": "./package.json"
+  },
   "files": [
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "scripts": {
-    "test": "standard && bare test.js"
+    "test": "prettier . --check && bare test.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +32,7 @@
   },
   "devDependencies": {
     "brittle": "^3.2.1",
-    "standard": "^17.0.0"
+    "prettier": "^3.4.2",
+    "prettier-config-standard": "^7.0.0"
   }
 }

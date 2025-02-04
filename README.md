@@ -8,7 +8,7 @@ npm i bare-readline
 
 ## Usage
 
-``` js
+```js
 const readline = require('bare-readline')
 
 const rl = readline.createInterface({
@@ -16,12 +16,10 @@ const rl = readline.createInterface({
   output: stream
 })
 
-rl
-  .on('data', (line) => {
-    console.log(line)
-    rl.prompt()
-  })
-  .prompt()
+rl.on('data', (line) => {
+  console.log(line)
+  rl.prompt()
+}).prompt()
 ```
 
 ## License
