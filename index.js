@@ -69,8 +69,9 @@ module.exports = exports = class Readline extends Readable {
       if (
         this._sawReturn > 0 &&
         Date.now() - this._sawReturn <= this._crlfDelay
-      )
+      ) {
         return
+      }
 
       this._sawReturn = 0
     } else {
@@ -88,9 +89,13 @@ module.exports = exports = class Readline extends Readable {
   }
 
   _onkey(key) {
-    if (key.name === 'up' || (key.ctrl && key.name === 'p')) return this._onup()
-    if (key.name === 'down' || (key.ctrl && key.name === 'n'))
+    if (key.name === 'up' || (key.ctrl && key.name === 'p')) {
+      return this._onup()
+    }
+
+    if (key.name === 'down' || (key.ctrl && key.name === 'n')) {
       return this._ondown()
+    }
 
     this._history.cursor = -1
 
@@ -182,6 +187,7 @@ module.exports = exports = class Readline extends Readable {
     this._history.cursor++
 
     this.line = this._history.get(this._history.cursor)
+
     this.cursor = this.line.length
     this.prompt()
   }
@@ -193,6 +199,7 @@ module.exports = exports = class Readline extends Readable {
 
     this.line =
       this._history.cursor === -1 ? '' : this._history.get(this._history.cursor)
+
     this.cursor = this.line.length
     this.prompt()
   }
