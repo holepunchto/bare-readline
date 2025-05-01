@@ -27,7 +27,7 @@ module.exports = exports = class Readline extends Readable {
     this._output = opts.output
     this._line = ''
     this._cursor = 0
-    this._previousCursor = 0
+    this._previousRows = 0
     this._columns = defaultColumns
     this._rows = defaultRows
     this._sawReturn = 0
@@ -58,18 +58,24 @@ module.exports = exports = class Readline extends Readable {
 
   prompt() {
     const line = this._prompt + this._line
+
     const cursor = this._prompt.length + this._cursor
 
-    this._previousCursor = this._cursor
+    const rows = Math.floor(line.length / this._columns)
+
+    if (this._previousRows) this.write(ansiEscapes.cursorUp(this._previousRows))
+
+    this.write(
+      ansiEscapes.cursorPosition(0) + ansiEscapes.eraseDisplayEnd + line
+    )
 
     const x = cursor % this._columns
 
-    this.write(
-      ansiEscapes.cursorPosition(0) +
-        ansiEscapes.eraseLine +
-        line +
-        ansiEscapes.cursorPosition(x)
-    )
+    if (x === 0) this.write(constants.EOL)
+
+    this.write(ansiEscapes.cursorPosition(x))
+
+    this._previousRows = rows
   }
 
   close() {
@@ -86,7 +92,7 @@ module.exports = exports = class Readline extends Readable {
     this.write(constants.EOL)
     this._line = ''
     this._cursor = 0
-    this._previousCursor = 0
+    this._previousRows = 0
     return line
   }
 
@@ -209,8 +215,6 @@ module.exports = exports = class Readline extends Readable {
 
   _onbackspace() {
     if (this._cursor) {
-      this.write(ansiEscapes.cursorBack(2))
-
       this._line =
         this._line.substring(0, this._cursor - 1) +
         this._line.substring(this._cursor)
