@@ -21,7 +21,7 @@ module.exports = exports = class Readline extends Readable {
     this._onresize = this._onresize.bind(this)
 
     this._decoder = new KeyDecoder().on('data', this._onkey)
-    this._history = new History()
+    this._history = new ReadlineHistory()
 
     this._input = opts.input.on('data', this._oninput)
     this._output = opts.output
@@ -266,7 +266,7 @@ exports.createInterface = function createInterface(opts) {
 
 exports.constants = constants
 
-class History {
+class ReadlineHistory {
   constructor() {
     this.entries = []
     this.cursor = -1
