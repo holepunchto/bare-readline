@@ -58,7 +58,6 @@ module.exports = exports = class Readline extends Readable {
 
   prompt() {
     const line = this._prompt + this._line
-
     const cursor = this._prompt.length + this._cursor
 
     const x = cursor % this._columns
