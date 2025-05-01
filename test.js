@@ -36,39 +36,35 @@ test('createInterface', (t) => {
   input.write('\r')
 })
 
-test('supports linefeed as line event', (t) => {
+test('supports \\n', (t) => {
   t.plan(2)
 
   const input = new PassThrough()
   const rl = new Readline({ input })
 
-  rl.on('line', (line) => {
+  rl.on('data', (line) => {
     t.is(line, 'hello world')
     rl.close()
+  }).on('close', () => {
+    t.pass('closed')
   })
-    .on('close', () => {
-      t.pass('closed')
-    })
-    .resume()
 
   input.write('hello world')
   input.write('\n')
 })
 
-test('supports \\r\\n as single line event', (t) => {
+test('supports \\r\\n', (t) => {
   t.plan(2)
 
   const input = new PassThrough()
   const rl = new Readline({ input })
 
-  rl.on('line', (line) => {
+  rl.on('data', (line) => {
     t.is(line, 'hello world')
     rl.close()
+  }).on('close', () => {
+    t.pass('closed')
   })
-    .on('close', () => {
-      t.pass('closed')
-    })
-    .resume()
 
   input.write('hello world')
   input.write('\r\n')
