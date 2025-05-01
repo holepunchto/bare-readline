@@ -61,7 +61,9 @@ module.exports = exports = class Readline extends Readable {
 
     const cursor = this._prompt.length + this._cursor
 
-    const rows = Math.floor(line.length / this._columns)
+    const offset = cursor === line.length ? 0 : 1
+
+    const rows = Math.floor((line.length - offset) / this._columns)
 
     if (this._previousRows) this.write(ansiEscapes.cursorUp(this._previousRows))
 
@@ -71,7 +73,7 @@ module.exports = exports = class Readline extends Readable {
 
     const x = cursor % this._columns
 
-    if (x === 0) this.write(constants.EOL)
+    if (x === 0 && offset === 0) this.write(constants.EOL)
 
     this.write(ansiEscapes.cursorPosition(x))
 
