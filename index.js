@@ -260,8 +260,10 @@ module.exports = exports = class Readline extends Readable {
   }
 }
 
+const Readline = exports
+
 exports.createInterface = function createInterface(opts) {
-  return new exports(opts)
+  return new Readline(opts)
 }
 
 exports.constants = constants
