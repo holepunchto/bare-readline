@@ -94,10 +94,19 @@ module.exports = exports = class Readline extends Readable {
 
   clearLine() {
     const line = this._line
+
+    const rows = Math.floor((this._prompt.length + line.length) / this._columns)
+
+    if (rows !== this._previousRows) {
+      this.write(ansiEscapes.cursorDown(rows - this._previousRows))
+    }
+
     this.write(constants.EOL)
+
     this._line = ''
     this._cursor = 0
     this._previousRows = 0
+
     return line
   }
 
