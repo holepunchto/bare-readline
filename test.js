@@ -45,9 +45,11 @@ test('supports linefeed as line event', (t) => {
   rl.on('line', (line) => {
     t.is(line, 'hello world')
     rl.close()
-  }).on('close', () => {
-    t.pass('closed')
   })
+    .on('close', () => {
+      t.pass('closed')
+    })
+    .resume()
 
   input.write('hello world')
   input.write('\n')
@@ -62,9 +64,11 @@ test('supports \\r\\n as single line event', (t) => {
   rl.on('line', (line) => {
     t.is(line, 'hello world')
     rl.close()
-  }).on('close', () => {
-    t.pass('closed')
   })
+    .on('close', () => {
+      t.pass('closed')
+    })
+    .resume()
 
   input.write('hello world')
   input.write('\r\n')

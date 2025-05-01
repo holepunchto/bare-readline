@@ -6,6 +6,9 @@ const constants = {
   EOL: '\r\n'
 }
 
+const defaultColumns = 80
+const defaultRows = 60
+
 module.exports = exports = class Readline extends Readable {
   constructor(opts = {}) {
     super()
@@ -15,49 +18,87 @@ module.exports = exports = class Readline extends Readable {
 
     this._oninput = this._oninput.bind(this)
     this._onkey = this._onkey.bind(this)
+    this._onresize = this._onresize.bind(this)
 
     this._decoder = new KeyDecoder().on('data', this._onkey)
     this._history = new History()
 
+    this._input = opts.input.on('data', this._oninput)
+    this._output = opts.output
+    this._line = ''
+    this._cursor = 0
+    this._previousCursor = 0
+    this._columns = defaultColumns
+    this._rows = defaultRows
     this._sawReturn = 0
 
-    this.input = opts.input.on('data', this._oninput)
-    this.output = opts.output
-    this.line = ''
-    this.cursor = 0
+    this.on('data', this._ondata).setEncoding('utf8').pause()
 
-    this.on('data', this._ondata).setEncoding('utf8')
+    if (this._output) {
+      this._output.on('resize', this._onresize)
+      this._onresize()
+    }
+  }
+
+  get input() {
+    return this._input
+  }
+
+  get output() {
+    return this._output
+  }
+
+  get line() {
+    return this._line
+  }
+
+  get cursor() {
+    return this._cursor
   }
 
   prompt() {
+    const line = this._prompt + this._line
+    const cursor = this._prompt.length + this._cursor
+
+    this._previousCursor = this._cursor
+
+    const x = cursor % this._columns
+
     this.write(
       ansiEscapes.cursorPosition(0) +
         ansiEscapes.eraseLine +
-        this._prompt +
-        this.line +
-        ansiEscapes.cursorPosition(this._prompt.length + this.cursor)
+        line +
+        ansiEscapes.cursorPosition(x)
     )
   }
 
   close() {
-    this.input.off('data', this._oninput)
+    this._input.off('data', this._oninput)
     this.push(null)
   }
 
   write(data) {
-    if (this.output) this.output.write(data)
+    if (this._output) this._output.write(data)
   }
 
   clearLine() {
-    const line = this.line
+    const line = this._line
     this.write(constants.EOL)
-    this.line = ''
-    this.cursor = 0
+    this._line = ''
+    this._cursor = 0
+    this._previousCursor = 0
     return line
   }
 
   _oninput(data) {
     this._decoder.write(data)
+  }
+
+  _onresize() {
+    const { columns = defaultColumns, rows = defaultRows } = this._output
+    this._columns = columns
+    this._rows = rows
+    this.prompt()
   }
 
   _ondata(line) {
@@ -157,38 +198,38 @@ module.exports = exports = class Readline extends Readable {
         characters = key.shift ? key.name.toUpperCase() : key.name
     }
 
-    this.line =
-      this.line.substring(0, this.cursor) +
+    this._line =
+      this._line.substring(0, this._cursor) +
       characters +
-      this.line.substring(this.cursor)
+      this._line.substring(this._cursor)
 
-    this.cursor += characters.length
+    this._cursor += characters.length
     this.prompt()
   }
 
   _onbackspace() {
-    if (this.cursor) {
+    if (this._cursor) {
       this.write(ansiEscapes.cursorBack(2))
 
-      this.line =
-        this.line.substring(0, this.cursor - 1) +
-        this.line.substring(this.cursor)
+      this._line =
+        this._line.substring(0, this._cursor - 1) +
+        this._line.substring(this._cursor)
 
-      this.cursor--
+      this._cursor--
       this.prompt()
     }
   }
 
   _onup() {
-    if (this._history.cursor === -1 && this.line.length > 0) return
+    if (this._history.cursor === -1 && this._line.length > 0) return
     if (this._history.length === 0) return
     if (this._history.length <= this._history.cursor + 1) return
 
     this._history.cursor++
 
-    this.line = this._history.get(this._history.cursor)
+    this._line = this._history.get(this._history.cursor)
 
-    this.cursor = this.line.length
+    this._cursor = this._line.length
     this.prompt()
   }
 
@@ -197,24 +238,24 @@ module.exports = exports = class Readline extends Readable {
 
     this._history.cursor--
 
-    this.line =
+    this._line =
       this._history.cursor === -1 ? '' : this._history.get(this._history.cursor)
 
-    this.cursor = this.line.length
+    this._cursor = this._line.length
     this.prompt()
   }
 
   _onright() {
-    if (this.cursor < this.line.length) {
-      this.cursor++
-      this.write(ansiEscapes.cursorForward())
+    if (this._cursor < this._line.length) {
+      this._cursor++
+      this.prompt()
     }
   }
 
   _onleft() {
-    if (this.cursor) {
-      this.cursor--
-      this.write(ansiEscapes.cursorBack())
+    if (this._cursor) {
+      this._cursor--
+      this.prompt()
     }
   }
 }
