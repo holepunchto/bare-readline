@@ -160,6 +160,17 @@ module.exports = exports = class Readline extends Readable {
 
     this._history.cursor = -1
 
+    if (key.name === 'right' || (key.ctrl && key.name === 'f')) {
+      return this._onright()
+    }
+
+    if (key.name === 'left' || (key.ctrl && key.name === 'b')) {
+      return this._onleft()
+    }
+
+    if (key.ctrl && key.name === 'e') return this._onend()
+    if (key.ctrl && key.name === 'a') return this._onstart()
+
     let characters
 
     switch (key.name) {
@@ -180,11 +191,6 @@ module.exports = exports = class Readline extends Readable {
         return this._online(false /* linefeed */)
       case 'linefeed':
         return this._online(true /* linefeed */)
-
-      case 'right':
-        return this._onright()
-      case 'left':
-        return this._onleft()
 
       case 'escape':
       case 'f1':
@@ -273,6 +279,20 @@ module.exports = exports = class Readline extends Readable {
   _onleft() {
     if (this._cursor) {
       this._cursor--
+      this.prompt()
+    }
+  }
+
+  _onend() {
+    if (this._cursor < this._line.length) {
+      this._cursor = this._line.length
+      this.prompt()
+    }
+  }
+
+  _onstart() {
+    if (this._cursor) {
+      this._cursor = 0
       this.prompt()
     }
   }
