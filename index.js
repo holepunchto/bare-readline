@@ -82,6 +82,14 @@ module.exports = exports = class Readline extends Readable {
 
     this._previousRows = rows - offsetY
   }
+  
+  setPrompt(prompt) {
+    this._prompt = prompt;
+  }
+
+  getPrompt() {
+    return this._prompt;
+  }
 
   close() {
     this._input.off('data', this._oninput)
