@@ -87,6 +87,10 @@ module.exports = exports = class Readline extends Readable {
     this._prompt = prompt;
   }
 
+  getPrompt() {
+    return this._prompt;
+  }
+
   close() {
     this._input.off('data', this._oninput)
     this.push(null)
