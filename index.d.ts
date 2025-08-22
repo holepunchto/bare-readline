@@ -21,11 +21,10 @@ interface Readline<E extends ReadlineEvents = ReadlineEvents>
   readonly output: Writable
 
   prompt(): void
-
+  setPrompt(prompt: string): void
+  getPrompt(): string
   close(): void
-
   write(data: string): void
-
   clearLine(): string
 }
 
