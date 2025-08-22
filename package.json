@@ -1,6 +1,6 @@
 {
   "name": "bare-readline",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Line editing for interactive CLIs with command history",
   "exports": {
     ".": {
