@@ -3,15 +3,17 @@
   "version": "1.1.0",
   "description": "Line editing for interactive CLIs with command history",
   "exports": {
+    "./package": "./package.json",
     ".": {
       "types": "./index.d.ts",
       "default": "./index.js"
     },
-    "./package": "./package.json"
+    "./promises": "./promises.js"
   },
   "files": [
     "index.js",
-    "index.d.ts"
+    "index.d.ts",
+    "promises.js"
   ],
   "scripts": {
     "test": "prettier . --check && bare test.js"

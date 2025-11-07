@@ -308,6 +308,8 @@ module.exports = exports = class Readline extends Readable {
 
 const Readline = exports
 
+exports.Interface = Readline // For Node.js compatibility
+
 exports.createInterface = function createInterface(opts) {
   return new Readline(opts)
 }
