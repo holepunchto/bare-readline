@@ -38,6 +38,8 @@ module.exports = exports = class Readline extends Readable {
       this._output.on('resize', this._onresize)
       this._onresize()
     }
+
+    this.resume()
   }
 
   get input() {
