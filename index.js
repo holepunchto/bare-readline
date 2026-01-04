@@ -32,14 +32,12 @@ module.exports = exports = class Readline extends Readable {
     this._rows = defaultRows
     this._sawReturn = 0
 
-    this.on('data', this._ondata).setEncoding('utf8').pause()
+    this.on('data', this._ondata).setEncoding('utf8')
 
     if (this._output) {
       this._output.on('resize', this._onresize)
       this._onresize()
     }
-
-    this.resume()
   }
 
   get input() {
