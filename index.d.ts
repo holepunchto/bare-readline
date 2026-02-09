@@ -13,9 +13,7 @@ interface ReadlineEvents extends ReadableEvents {
   line: [line: string]
 }
 
-interface Readline<
-  E extends ReadlineEvents = ReadlineEvents
-> extends Readable<E> {
+interface Readline<E extends ReadlineEvents = ReadlineEvents> extends Readable<E> {
   readonly cursor: number
   readonly line: string
   readonly input: Readable
