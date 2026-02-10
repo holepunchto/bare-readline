@@ -71,9 +71,7 @@ module.exports = exports = class Readline extends Readable {
 
     if (this._previousRows) this.write(ansiEscapes.cursorUp(this._previousRows))
 
-    this.write(
-      ansiEscapes.cursorPosition(0) + ansiEscapes.eraseDisplayEnd + line
-    )
+    this.write(ansiEscapes.cursorPosition(0) + ansiEscapes.eraseDisplayEnd + line)
 
     if (x === 0 && offsetX === 0) this.write(constants.EOL)
     else if (offsetY) this.write(ansiEscapes.cursorUp(offsetY))
@@ -135,10 +133,7 @@ module.exports = exports = class Readline extends Readable {
 
   _online(linefeed) {
     if (linefeed) {
-      if (
-        this._sawReturn > 0 &&
-        Date.now() - this._sawReturn <= this._crlfDelay
-      ) {
+      if (this._sawReturn > 0 && Date.now() - this._sawReturn <= this._crlfDelay) {
         return
       }
 
@@ -233,9 +228,7 @@ module.exports = exports = class Readline extends Readable {
     }
 
     this._line =
-      this._line.substring(0, this._cursor) +
-      characters +
-      this._line.substring(this._cursor)
+      this._line.substring(0, this._cursor) + characters + this._line.substring(this._cursor)
 
     this._cursor += characters.length
     this.prompt()
@@ -243,9 +236,7 @@ module.exports = exports = class Readline extends Readable {
 
   _onbackspace() {
     if (this._cursor) {
-      this._line =
-        this._line.substring(0, this._cursor - 1) +
-        this._line.substring(this._cursor)
+      this._line = this._line.substring(0, this._cursor - 1) + this._line.substring(this._cursor)
 
       this._cursor--
       this.prompt()
@@ -270,8 +261,7 @@ module.exports = exports = class Readline extends Readable {
 
     this._history.cursor--
 
-    this._line =
-      this._history.cursor === -1 ? '' : this._history.get(this._history.cursor)
+    this._line = this._history.cursor === -1 ? '' : this._history.get(this._history.cursor)
 
     this._cursor = this._line.length
     this.prompt()
