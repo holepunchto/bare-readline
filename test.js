@@ -101,3 +101,26 @@ test('emit line event', (t) => {
 
   input.write('hello world\n')
 })
+
+test('for-await readline instance', async (t) => {
+  const input = new PassThrough()
+  const rl = Readline.createInterface({ input })
+
+  const lines = []
+
+  rl.on('close', () => {
+    t.is('hello world', lines.join(' '))
+    t.pass('closed')
+  })
+
+  input.write('hello\n')
+  input.write('world\n')
+
+  for await (const chunk of rl) {
+    lines.push(chunk.toString())
+
+    if (lines.length == 2) {
+      rl.close()
+    }
+  }
+})

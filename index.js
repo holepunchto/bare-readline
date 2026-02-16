@@ -32,7 +32,7 @@ module.exports = exports = class Readline extends Readable {
     this._rows = defaultRows
     this._sawReturn = 0
 
-    this.on('data', this._ondata).setEncoding('utf8')
+    this.on('newListener', this._onnewlistener).setEncoding('utf8')
 
     if (this._output) {
       this._output.on('resize', this._onresize)
@@ -116,6 +116,10 @@ module.exports = exports = class Readline extends Readable {
     return line
   }
 
+  _onnewlistener(name) {
+    if (name === 'line') this.resume() // For Node.js compatibility
+  }
+
   _oninput(data) {
     this._decoder.write(data)
   }
@@ -125,10 +129,6 @@ module.exports = exports = class Readline extends Readable {
     this._columns = columns
     this._rows = rows
     this.prompt()
-  }
-
-  _ondata(line) {
-    this.emit('line', line) // For Node.js compatibility
   }
 
   _online(linefeed) {
@@ -148,6 +148,7 @@ module.exports = exports = class Readline extends Readable {
     if (remember && line !== this._history.get(0)) this._history.unshift(line)
 
     this.push(line)
+    this.emit('line', line) // For Node.js compatibility
 
     if (remember) this.emit('history', this._history.entries)
   }
