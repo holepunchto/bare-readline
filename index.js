@@ -117,7 +117,7 @@ module.exports = exports = class Readline extends Readable {
   }
 
   _onnewlistener(name) {
-    if (name === 'line') this.resume()
+    if (name === 'line') this.resume() // For Node.js compatibility
   }
 
   _oninput(data) {
