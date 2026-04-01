@@ -175,6 +175,8 @@ module.exports = exports = class Readline extends Readable {
     if (key.ctrl && key.name === 'e') return this._onend()
     if (key.ctrl && key.name === 'a') return this._onstart()
 
+    if (key.ctrl && key.name === 'l') return this._onclearscreen()
+
     let characters
 
     switch (key.name) {
@@ -294,6 +296,11 @@ module.exports = exports = class Readline extends Readable {
       this._cursor = 0
       this.prompt()
     }
+  }
+
+  _onclearscreen() {
+    this.write(ansiEscapes.cursorPosition(0, 0))
+    this.prompt()
   }
 }
 
