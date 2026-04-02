@@ -119,7 +119,7 @@ test('for-await readline instance', async (t) => {
   for await (const chunk of rl) {
     lines.push(chunk.toString())
 
-    if (lines.length == 2) {
+    if (lines.length === 2) {
       rl.close()
     }
   }
