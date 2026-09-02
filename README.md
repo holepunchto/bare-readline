@@ -22,6 +22,10 @@ rl.on('data', (line) => {
 }).prompt()
 ```
 
+## API
+
+See the [`bare-readline` reference](https://docs.pears.com/reference/bare/modules/bare-readline).
+
 ## License
 
 Apache-2.0
